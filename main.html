@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Timer Example</title>
+    <style>
+      body {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+      #timer-container {
+        background-color: white;
+        width: 300px;
+        height: 150px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        font-size: 2em;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      }
+      
+      #timer-container.red {
+        background-color: red;
+      }
+      
+      #counters-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+      }
+      
+      .counter {
+        margin: 0 20px;
+        text-align: center;
+      }
+      
+      @keyframes flash {
+        0% {
+          background-color: white;
+        }
+        50% {
+          background-color: red;
+        }
+        100% {
+          background-color: white;
+        }
+      }
+
+      .flash {
+        animation: flash 0.5s linear 10; /* Animate for 10 iterations (5 seconds) */
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Duel timer</h1>
+    <div style="padding: 15px">
+      <label for="timer-input">Set Timer:</label>
+      <select id="timer-input">
+        <option value="15">00:15</option>
+        <option value="30">00:30</option>
+        <option value="45">00:45</option>
+        <option value="60">01:00</option>
+        <option value="75">01:15</option>
+        <option value="90">01:30</option>
+        <option value="105">01:45</option>
+        <option value="120">02:00</option>
+        <option value="135">02:15</option>
+        <option value="150">02:30</option>
+        <option value="165">02:45</option>
+        <option value="180">03:00</option>
+        <option value="195">03:15</option>
+        <option value="210">03:30</option>
+        <option value="225">03:45</option>
+        <option value="240">04:00</option>
+      </select>
+      <button onclick="setTimer()">Set</button>
+    </div>
+    
+    
+    <div id="timer-container">
+      <p id="timer-display">00:00</p>
+      <div>
+        <button id="pauseBtn" onclick="pauseTimer()" style="display:none">Pause</button>
+        <button id="startBtn" onclick="startTimer()">Start</button>
+        <button onclick="resetTimer()">Reset</button>
+      </div>
+    </div>
+    
+    <div id="counters-container">
+      <div class="counter">
+        <p>Counter 1: <span id="counter1">0</span></p>
+        <button onclick="incrementCounter1()">Increment</button>
+      </div>
+      <div class="counter">
+        <button onclick="resetCounters()">Reset counters</button>
+      </div>
+      <div class="counter">
+        <p>Counter 2: <span id="counter2">0</span></p>
+        <button onclick="incrementCounter2()">Increment</button>
+      </div>
+    </div>
+    
+    <script>
+     let timer;
+      let time = 0;
+      let counter1 = 0;
+      let counter2 = 0;
+      let isPaused = false;
+      
+      function setTimer() {
+        let input = document.getElementById("timer-input");
+        let newTime = input.value;
+        time = newTime;
+        updateTimerDisplay();
+      }
+      
+      function startTimer() {
+        if (!time) {
+          return;
+        }
+        
+        intervalId = setInterval(updateTimer, 1000);
+        document.getElementById("startBtn").style.display = "none";
+        document.getElementById("pauseBtn").style.display = "";
+      }
+
+      function pauseTimer() {
+        clearInterval(intervalId);
+        isPaused = true;
+        pausedTimeLeft = time;
+        document.getElementById("startBtn").style.display = "";
+        document.getElementById("pauseBtn").style.display = "none";
+      }
+      
+      function resetTimer() {
+        time = 0;
+        pausedTimeLeft = null; // Reset the pausedTimeLeft variable
+        document.getElementById("timer-display").innerText = formatTime(time);
+        document.body.style.backgroundColor = "white";
+        clearInterval(intervalId);
+        isPaused = false;
+        document.getElementById("pauseBtn").style.display = "none";
+        document.getElementById("startBtn").style.display = "";
+      }
+      
+      function updateTimer() {
+        time--;
+        if (time <= 0) {
+          clearInterval(timer);
+          time = null;
+          document.getElementById("timer-container").classList.add("flash"); // Add the "flash" class
+        }
+        updateTimerDisplay();
+      }
+      
+      function updateTimerDisplay() {
+        let hours = Math.floor(time / 3600);
+        let minutes = Math.floor((time - (hours * 3600)) / 60);
+        let seconds = time - (hours * 3600) - (minutes * 60);
+        let display = `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+        document.getElementById("timer-display").innerHTML = display;
+      }
+
+      function formatTime(time) {
+        let minutes = Math.floor(time / 60);
+        let seconds = time % 60;
+        return `${padZero(minutes)}:${padZero(seconds)}`;
+      }
+
+      function padZero(number) {
+        return number.toString().padStart(2, "0");
+      }
+            
+     // Counter 1 functions
+      function incrementCounter1() {
+        counter1++;
+        document.getElementById("counter1").innerText = counter1;
+      }
+
+      function resetCounters() {
+        counter1 = 0;
+        document.getElementById("counter1").innerText = counter1;
+        counter2 = 0;
+        document.getElementById("counter2").innerText = counter2;
+      }
+
+      // Counter 2 functions
+      function incrementCounter2() {
+        counter2++;
+        document.getElementById("counter2").innerText = counter2;
+      }
+      
+    </script>
+  </body>
+</html>
+
